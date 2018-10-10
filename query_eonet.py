@@ -75,6 +75,15 @@ def run_query(query):
 
 def filter_response(response, starttime, endtime, polygon_string):
     '''validate response and filter through polygon client-side'''
+    #remove events without a date
+    for event in response['events']:
+        loc_list = []
+        for location in event['geometries']:
+            if 'date' in location.keys():
+                loc_list.append(location)
+        del event['geometries']
+        event['geometries'] = loc_list
+    #if there are no filters
     if polygon_string is None and starttime is None and endtime is None:
         return response['events']
     events = []
