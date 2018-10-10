@@ -1,5 +1,5 @@
 {
-  "command":"/home/ops/verdi/ops/usgs_neic/query_eonet_range_wrapper.sh",
+  "command":"/home/ops/verdi/ops/eonet/query_eonet_range_wrapper.sh",
   "imported_worker_files": {
     "/home/ops/.netrc": "/home/ops/.netrc",
     "/home/ops/.aws": "/home/ops/.aws",

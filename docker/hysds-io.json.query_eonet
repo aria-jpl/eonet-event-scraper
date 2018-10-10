@@ -1,5 +1,5 @@
 {
-    "label": "Query USGS NEIC Earthquake Feed",
+    "label": "Query EONET Feed",
     "submission_type": "individual",
     "params" : [
     {
