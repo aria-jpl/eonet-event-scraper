@@ -36,11 +36,14 @@ def build(event, submit):
     print('    version:      {0}'.format(ds['version']))
 
 def build_id(event):
-    source = event['sources'][0]['id']
-    event_id = event['id']
-    category = event['categories'][0]['title'].lower()
-    stripped_dt = re.sub('-:', '', event['geometries'][-1]['date'])
-    uid = '{0}_{1}_{2}_{3}_4'.format(PRODUCT_PREFIX, source, category, event_id, stripped_dt)
+    try:
+        source = event['sources'][0]['id']
+        event_id = event['id']
+        category = event['categories'][0]['title'].lower()
+        stripped_dt = re.sub('-:', '', event['geometries'][-1]['date'])
+        uid = '{0}_{1}_{2}_{3}_4'.format(PRODUCT_PREFIX, source, category, event_id, stripped_dt)
+    except:
+        raise Exception('failed on {}'.format(event))
     return uid
 
 def build_dataset(event):
