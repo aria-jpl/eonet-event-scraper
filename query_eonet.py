@@ -85,7 +85,7 @@ def filter_response(response, starttime, endtime, polygon_string):
         event['geometries'] = loc_list
     #if there are no filters
     if polygon_string is None and starttime is None and endtime is None:
-        return response['events']
+        return [event in response['events'] if len(response['events']['geometries']) > 0]
     events = []
     #parse the json for names and urls
     for event in response['events']:
