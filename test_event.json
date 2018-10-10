@@ -1,0 +1,36 @@
+{
+  "id": "EONET_TEST",
+  "title": "Tropical Storm Test",
+  "description": "",
+  "link": "https://eonet.sci.gsfc.nasa.gov/api/v2.1/events/EONET_4006",
+  "categories": [
+    {
+      "id": 10,
+      "title": "Severe Storms"
+    }
+  ],
+  "sources": [
+    {
+      "id": "NOAA_NHC",
+      "url": "https://www.nhc.noaa.gov/archive/2018/NADINE.shtml"
+    }
+  ],
+  "geometries": [
+    {
+      "date": "2018-10-09T10:00:00Z",
+      "type": "Point",
+      "coordinates": [
+        -29.7,
+        10.3
+      ]
+    },
+    {
+      "date": "2018-10-10T03:00:00Z",
+      "type": "Point",
+      "coordinates": [
+        -31,
+        11.6
+      ]
+    }
+  ]
+}

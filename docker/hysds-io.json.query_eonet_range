@@ -1,0 +1,23 @@
+{
+    "label": "Query EONET Time Range",
+    "submission_type": "individual",
+    "params" : [
+    {
+      "name": "starttime",
+      "from": "submitter",
+      "type": "text"
+    },
+    {
+      "name": "endtime",
+      "from": "submitter",
+      "type": "text"
+    },
+    {
+      "name": "geojson_polygon",
+      "from": "submitter",
+      "type": "text",
+      "default": "[[-180,-90],[-180,90],[180,90],[180,-90],[-180,-90]]"
+    }
+    ]
+}
+

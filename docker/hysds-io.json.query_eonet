@@ -1,0 +1,19 @@
+{
+    "label": "Query USGS NEIC Earthquake Feed",
+    "submission_type": "individual",
+    "params" : [
+    {
+      "name": "lookback_days",
+      "from": "submitter",
+      "type": "text",
+      "default": "redis"
+    },
+    {
+      "name": "geojson_polygon",
+      "from": "submitter",
+      "type": "text",
+      "default": "[[-180,-90],[-180,90],[180,90],[180,-90],[-180,-90]]"
+    }
+    ]
+}
+

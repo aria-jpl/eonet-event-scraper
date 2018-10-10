@@ -1,0 +1,23 @@
+{
+  "command":"/home/ops/verdi/ops/eonet/query_eonet_wrapper.sh",
+  "imported_worker_files": {
+    "/home/ops/.netrc": "/home/ops/.netrc",
+    "/home/ops/.aws": "/home/ops/.aws",
+    "/home/ops/ariamh/conf/settings.conf": "/home/ops/ariamh/conf/settings.conf"
+  },
+  "disk_usage":"2GB",
+  "recommended-queues": [ "factotum-job_worker-small" ],
+  "soft_time_limit": 1000,
+  "time_limit": 1800,
+  "params" : [
+  {
+    "name": "lookback_days",
+    "destination": "positional"
+  },
+  {
+    "name": "geojson_polygon",
+    "destination": "positional"
+  }
+  ]
+}
+
