@@ -2,6 +2,7 @@ FROM hysds/pge-base:latest
 MAINTAINER jlinick "Justin.P.Linick@jpl.nasa.gov"
 LABEL description="USGS EONET query & evaluation base image"
 
+USER root
 #install shapely for client side filtering
 RUN pip install shapely
 
