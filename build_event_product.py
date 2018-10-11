@@ -40,8 +40,8 @@ def build_id(event):
         source = event['sources'][0]['id']
         event_id = event['id']
         category = event['categories'][0]['title'].lower()
-        stripped_dt = re.sub('-:', '', event['geometries'][-1]['date'])
-        uid = '{0}_{1}_{2}_{3}_4'.format(PRODUCT_PREFIX, source, category, event_id, stripped_dt)
+        stripped_dt = re.sub('-|:', '', event['geometries'][-1]['date'])
+        uid = '{0}_{1}_{2}_{3}_{4}'.format(PRODUCT_PREFIX, source, category, event_id, stripped_dt)
     except:
         raise Exception('failed on {}'.format(event))
     return uid
@@ -116,6 +116,6 @@ def submit_product(ds, met):
         ingest(uid, './datasets.json', app.conf.GRQ_UPDATE_URL, app.conf.DATASET_PROCESSED_QUEUE, ds_dir, None) 
         if os.path.exists(uid):
             shutil.rmtree(uid)
-    except:
-        print('failed on submission of {0}'.format(uid))
+    except Exception, err:
+        print('failed on submission of {0} with {1}'.format(uid, err))
 

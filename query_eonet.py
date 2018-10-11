@@ -9,7 +9,7 @@ import json
 import os
 import datetime
 import argparse
-
+import copy
 import dateutil.parser
 import pytz
 import requests
@@ -38,7 +38,10 @@ def main(starttime=None, endtime=None, lookback_days=None, status=None, source=N
     events = filter_response(response, starttime, endtime, polygon)
     print('filtered results returned {0} total'.format(len(events)))
     for event in events:
-        build_event_product.build(event, submit)
+        try:
+            build_event_product.build(event, submit)
+        except Exception, err:
+            print('failed on build {} with err: {}'.format(event, err))
     if redis:
         redis_set(REDIS_KEY, now) #sets the redis query to the runtime
 
@@ -76,43 +79,20 @@ def run_query(query):
 def filter_response(response, starttime, endtime, polygon_string):
     '''validate response and filter through polygon client-side'''
     #remove events without a date
+    final = []
     for event in response['events']:
-        loc_list = []
-        for location in event['geometries']:
-            if 'date' in location.keys():
-                loc_list.append(location)
-        del event['geometries']
-        event['geometries'] = loc_list
-    #if there are no filters
-    if polygon_string is None and starttime is None and endtime is None:
-        return [event in response['events'] if len(response['events']['geometries']) > 0]
-    events = []
-    #parse the json for names and urls
-    for event in response['events']:
-        for location in event['geometries']:
-            valid_spatial = []
-            valid_temporal = []
-            if polygon_string: #run spatial filter
-                if validate_spatial_coverage(location, polygon_string):
-                    valid_spatial.append(location)
-            else:
-                valid_spatial.append(location)
-            if starttime and endtime: #run temporal filter
-                if validate_temporal_coverage(location, starttime, endtime):
-                    valid_temporal.append(location)
-            else:
-                valid_temporal.append(location)
-        #find shared events
-        del event['geometries']
-        new_geom = []
-        for locs in valid_spatial:
-            for loct in valid_temporal:
-                if cmp(locs, loct) == 0:
-                    new_geom.append(locs)
-        event['geometries'] = new_geom
-        if len(event['geometries']) > 0:
-            events.append(event)
-    return events
+        tempevent = copy.deepcopy(event)
+        tempevent['geometries'] = [x for x in copy.deepcopy(event['geometries']) if 'date' in x.keys()]
+        final.append(tempevent)
+        print(tempevent['geometries'][0]['date'])
+    events = [e for e in final if len(e['geometries']) > 0]s
+    #run the spatial and temporal filters
+    for event in events:
+        if polygon_string:
+            event['geometries'] = [e for e in event['geometries'] if validate_spatial_coverage(e, polygon_string)]
+        if starttime and endtime:
+            event['geometries'] = [e for e in event['geometries'] if validate_temporal_coverage(e, starttime, endtime)]
+    return [e for e in events if len(e['geometries']) > 0]
 
 def validate_temporal_coverage(location, starttime, endtime):
     '''validate that the date in location is betweens start and endtime strings'''
