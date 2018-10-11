@@ -85,7 +85,7 @@ def filter_response(response, starttime, endtime, polygon_string):
         tempevent['geometries'] = [x for x in copy.deepcopy(event['geometries']) if 'date' in x.keys()]
         final.append(tempevent)
         print(tempevent['geometries'][0]['date'])
-    events = [e for e in final if len(e['geometries']) > 0]s
+    events = [e for e in final if len(e['geometries']) > 0]
     #run the spatial and temporal filters
     for event in events:
         if polygon_string:
