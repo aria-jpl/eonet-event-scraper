@@ -39,7 +39,11 @@ def main(starttime=None, endtime=None, lookback_days=None, status=None, source=N
     print('filtered results returned {0} total'.format(len(events)))
     for event in events:
         try:
-            build_event_product.build(event, submit)
+            #submit an event for each product date/location
+            geometries = copy.deepcopy(event['geometries'])
+            for geometry in geometries:
+                event['geometries'] = [geometry]
+                build_event_product.build(event, submit)
         except Exception, err:
             print('failed on build {} with err: {}'.format(event, err))
     if redis:
