@@ -68,9 +68,9 @@ def run_query(query):
     '''runs the input query over the given url, returning a dict object from the result text'''
     try:
         session = requests.session()
-        response = session.get(query, timeout=30)
+        response = session.get(query, timeout=45)
     except Exception, e:
-        raise Exception('USGS Query failed: {0}\nquery: {1}'.format(e, query)) 
+        raise Exception('Query failed: {0}\nquery: {1}'.format(e, query)) 
     #print(response)
     if response.status_code != 200:
         raise Exception("{0} status for query: {1}".format(response.status_code, query))
