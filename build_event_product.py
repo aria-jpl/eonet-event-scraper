@@ -41,7 +41,7 @@ def build_id(event):
         event_id = event['id']
         category = event['categories'][0]['title'].lower()
         stripped_dt = re.sub('-|:', '', event['geometries'][-1]['date'])
-        uid = '{0}_{1}_{2}_{3}_{4}'.format(PRODUCT_PREFIX, source, category, event_id, stripped_dt)
+        uid = '{0}_{1}_{2}_{3}_{4}'.format(PRODUCT_PREFIX, category, source, event_id, stripped_dt)
     except:
         raise Exception('failed on {}'.format(event))
     return uid
