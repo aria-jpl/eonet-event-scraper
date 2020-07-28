@@ -1,0 +1,36 @@
+{
+  "datasets": [
+    {
+      "ipath": "hysds::data/eonet-sea-and-lake-ice",
+      "match_pattern": "/(?P<id>event_sea-and-lake-ice.*?EONET.+)$",
+      "alt_match_pattern": null,
+      "extractor": null,
+      "level": "l0",
+      "type": "event"
+    },
+    {
+      "ipath": "hysds::data/eonet-severe-storms",
+      "match_pattern": "/(?P<id>event_severe-storms.*?EONET.+)$",
+      "alt_match_pattern": null,
+      "extractor": null,
+      "level": "l0",
+      "type": "event"
+    },
+    {
+      "ipath": "hysds::data/eonet-volcanoes",
+      "match_pattern": "/(?P<id>event_volcanoes.*?EONET.+)$",
+      "alt_match_pattern": null,
+      "extractor": null,
+      "level": "l0",
+      "type": "event"
+    },
+    {
+      "ipath": "hysds::data/eonet-wildfires",
+      "match_pattern": "/(?P<id>event_wildfires.*?EONET.+)$",
+      "alt_match_pattern": null,
+      "extractor": null,
+      "level": "l0",
+      "type": "event"
+    }
+  ]
+}

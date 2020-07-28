@@ -13,9 +13,10 @@ import shutil
 import datetime
 import pytz
 
-from hysds.celery import app
-from hysds.dataset_ingest import ingest
-import hysds.orchestrator
+# TODO: Determine whether direct-ingest is desirable, and fix if so
+# from hysds.celery import app
+# from hysds.dataset_ingest import ingest
+# import hysds.orchestrator
 
 VERSION = 'v1.0'
 PRODUCT_PREFIX = 'event'
@@ -26,8 +27,9 @@ def build(event, submit):
     ds = build_dataset(event)
     met = build_met(event)
     build_product_dir(ds, met)
-    if submit:
-        submit_product(ds, met)
+    # TODO: Determine whether direct-ingest is desirable, and fix if so
+    # if submit:
+    #     submit_product(ds, met)
     print('Publishing Event ID: {0}'.format(ds['label']))
     print('    event:        {0}'.format(event['title']))
     print('    source:       {0}'.format(event['sources'][0]['id']))
@@ -39,7 +41,7 @@ def build_id(event):
     try:
         source = event['sources'][0]['id']
         event_id = event['id']
-        category = event['categories'][0]['title'].lower()
+        category = event['categories'][0]['title'].lower().replace(' ', '-')
         stripped_dt = re.sub('-|:', '', event['geometries'][-1]['date'])
         uid = '{0}_{1}_{2}_{3}_{4}'.format(PRODUCT_PREFIX, category, source, event_id, stripped_dt)
     except:
@@ -109,13 +111,15 @@ def build_product_dir(ds, met):
     with open(met_path, 'w') as outfile:
         json.dump(met, outfile)
 
-def submit_product(ds, met):
-    uid = ds['label']
-    ds_dir = os.path.join(os.getcwd(), uid)
-    try:
-        ingest(uid, './datasets.json', app.conf.GRQ_UPDATE_URL, app.conf.DATASET_PROCESSED_QUEUE, ds_dir, None) 
-        if os.path.exists(uid):
-            shutil.rmtree(uid)
-    except Exception, err:
-        print('failed on submission of {0} with {1}'.format(uid, err))
+
+# TODO: Determine whether direct-ingest is desirable, and fix if so
+# def submit_product(ds, met):
+#     uid = ds['label']
+#     ds_dir = os.path.join(os.getcwd(), uid)
+#     try:
+#         ingest(uid, './datasets.json', app.conf.GRQ_UPDATE_URL, app.conf.DATASET_PROCESSED_QUEUE, ds_dir, None)
+#         if os.path.exists(uid):
+#             shutil.rmtree(uid)
+#     except Exception as err:
+#         print('failed on submission of {0} with {1}'.format(uid, err))
 

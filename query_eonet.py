@@ -10,13 +10,13 @@ import os
 import datetime
 import argparse
 import copy
-import dateutil.parser
+import dateutil.parser as dt_parser
 import pytz
 import requests
 from requests.auth import HTTPBasicAuth
 from shapely.geometry import shape, Polygon, Point
 import redis
-from hysds_commons.net_utils import get_container_host_ip
+# from hysds_commons.net_utils import get_container_host_ip
 import build_event_product
 
 POOL = None
@@ -44,11 +44,13 @@ def main(starttime=None, endtime=None, lookback_days=None, status=None, source=N
             for geometry in geometries:
                 event['geometries'] = [geometry]
                 build_event_product.build(event, submit)
-        except Exception, err:
+        except Exception as err:
             print('failed on build {} with err: {}'.format(event, err))
     if redis:
-        redis_set(REDIS_KEY, now) #sets the redis query to the runtime
-
+        # TODO: sort out redis authentication required error after prototype is complete  
+        pass        
+        # redis_set(REDIS_KEY, now) #sets the redis query to the runtime
+        
 def build_query(lookback_days, status, source, polygon_string, now):
     '''builds a query url from the input filter params. returns the url'''
     query = 'https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=10000'
@@ -57,8 +59,8 @@ def build_query(lookback_days, status, source, polygon_string, now):
         #use dt of last query from redis, & find the number of days lookback that requires
         redis_str = get_redis_time()
         if not redis_str is None:
-            redis_dt = dateutil.parser.parse(redis_str).replace(tzinfo=pytz.UTC)
-            num_days = (dateutil.parser.parse(now).replace(tzinfo=pytz.UTC) - redis_dt).days + 1
+            redis_dt = dt_parser.parse(redis_str).replace(tzinfo=pytz.UTC)
+            num_days = (dt_parser.parse(now).replace(tzinfo=pytz.UTC) - redis_dt).days + 1
             query += '&days={}'.format(num_days)
     elif lookback_days:
         query += '&days={0}'.format(lookback_days)
@@ -73,7 +75,7 @@ def run_query(query):
     try:
         session = requests.session()
         response = session.get(query, timeout=45)
-    except Exception, e:
+    except Exception as e:
         raise Exception('Query failed: {0}\nquery: {1}'.format(e, query)) 
     #print(response)
     if response.status_code != 200:
@@ -100,9 +102,9 @@ def filter_response(response, starttime, endtime, polygon_string):
 
 def validate_temporal_coverage(location, starttime, endtime):
     '''validate that the date in location is betweens start and endtime strings'''
-    start_dt = dateutil.parser.parse(starttime).replace(tzinfo=pytz.UTC)
-    end_dt = dateutil.parser.parse(endtime).replace(tzinfo=pytz.UTC)
-    event_dt = dateutil.parser.parse(location['date']).replace(tzinfo=pytz.UTC)
+    start_dt = dt_parser.parse(starttime).replace(tzinfo=pytz.UTC)
+    end_dt = dt_parser.parse(endtime).replace(tzinfo=pytz.UTC)
+    event_dt = dt_parser.parse(location['date']).replace(tzinfo=pytz.UTC)
     if event_dt > start_dt and event_dt < end_dt:
         return True
     return False
@@ -140,7 +142,7 @@ def is_covered(event_shape, polygon):
 def validate_user_time(input_time):
     '''parses the time and returns in UTC format'''
     try:
-        user_time = dateutil.parser.parse(input_time).replace(tzinfo=pytz.UTC)
+        user_time = dt_parser.parse(input_time).replace(tzinfo=pytz.UTC)
     except:
         raise Exception('Unable to parse input time: {0}'.format(input_time))
     return user_time.strftime('%Y-%m-%dT%H:%M:%S')
@@ -179,7 +181,7 @@ def get_test_event():
     test_json = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_event.json')
     return json.load(open(test_json))
 
-def parser():
+def argument_parser():
     '''
     Construct a parser to parse arguments
     @return argparse parser
@@ -192,11 +194,12 @@ def parser():
     parse.add_argument("--source", required=False, default=None, help="Query over single source, sources at: https://eonet.sci.gsfc.nasa.gov/api/v2.1/sources", dest="source")
     parse.add_argument("--slack_notification", required=False, default=False, help="Key for slack notification, will notify via slack if provided.", dest="slack_notification")
     parse.add_argument("--polygon", required=False, default=None, help="Geojson polygon filter", dest="polygon")
-    parse.add_argument("--test", required=False, default=False, action="store_true", help="Run a test submission. Overrides all other params", dest="test") 
-    parse.add_argument("--submit", required=False, default=False, action="store_true", help="Submits the event directly. Must have datasets in working directory.", dest="submit")
+    parse.add_argument("--test", required=False, default=False, action="store_true", help="Run a test submission. Overrides all other params", dest="test")
+    # TODO: Determine whether direct-ingest is desirable, and fix if so
+    # parse.add_argument("--submit", required=False, default=False, action="store_true", help="Submits the event directly. Must have datasets in working directory.", dest="submit")
     return parse
 
 if __name__ == '__main__':
-    args = parser().parse_args()
-    main(starttime=args.starttime, endtime=args.endtime, lookback_days=args.lookback_days, status=args.status, source=args.source, slack_notification=args.slack_notification, polygon=args.polygon, test=args.test, submit=args.submit)
+    args = argument_parser().parse_args()
+    main(starttime=args.starttime, endtime=args.endtime, lookback_days=args.lookback_days, status=args.status, source=args.source, slack_notification=args.slack_notification, polygon=args.polygon, test=args.test)
 

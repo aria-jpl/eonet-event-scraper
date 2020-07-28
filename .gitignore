@@ -6,7 +6,7 @@
 ############ ######
 *.pyc
 
-# OS generated Files #
+# OS-Generated Files #
 ######################
 .DS_Store
 .DS_Store?
@@ -15,3 +15,12 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# IDE-generated Files #
+.idea
+
+# Configuration Files #
+celeryconfig.py
+
+# Local Virtual Environment Files #
+venv

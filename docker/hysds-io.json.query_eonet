@@ -6,7 +6,7 @@
       "name": "lookback_days",
       "from": "submitter",
       "type": "text",
-      "default": "redis"
+      "default": "1"
     },
     {
       "name": "geojson_polygon",

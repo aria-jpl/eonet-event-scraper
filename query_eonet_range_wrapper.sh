@@ -20,4 +20,6 @@ then
 fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-${DIR}/query_eonet.py --starttime "${1}" --endtime "${2}" --polygon "${3}" --submit
+${DIR}/query_eonet.py --starttime "${1}" --endtime "${2}" --polygon "${3}"
+# TODO: Determine whether direct-ingest is desirable, and fix if so
+#${DIR}/query_eonet.py --starttime "${1}" --endtime "${2}" --polygon "${3}" --submit

@@ -2,10 +2,6 @@ FROM hysds/pge-base:latest
 MAINTAINER jlinick "Justin.P.Linick@jpl.nasa.gov"
 LABEL description="USGS EONET query & evaluation base image"
 
-USER root
-#install shapely for client side filtering
-RUN pip install shapely
-
 USER ops
 # copy packages
 COPY . /home/ops/verdi/ops/eonet

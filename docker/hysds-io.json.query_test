@@ -1,5 +1,5 @@
 {
-    "label": "Query USGS NEIC Test Publish",
+    "label": "Query EONET Test Publish",
     "submission_type": "individual",
     "params" : []
 }

@@ -6,8 +6,6 @@ Submits a standard PAGER job via a REST call, without HySDS reqs
 
 from __future__ import print_function
 import os
-import re
-import json
 import argparse
 import requests
 from datetime import datetime
@@ -37,7 +35,7 @@ def main(lookback, polygon, version, queue, priority, tags):
     if 'result' in result.keys() and 'success' in result.keys():
         if result['success'] == True:
             job_id = result['result']
-            print('%s: submitted USGSS NEIC job version: %s job_id: %s' % (now, version, job_id))
+            print('%s: submitted EONET job version: %s job_id: %s' % (now, version, job_id))
         else:
             print('%s: job not submitted successfully: %s' % (now, result))
             raise Exception('job not submitted successfully: %s' % result)
