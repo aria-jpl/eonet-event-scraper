@@ -26,7 +26,7 @@ def build_hysds_product(event):
     print('    event:        {0}'.format(event['title']))
     print('    source:       {0}'.format(event['sources'][0]['id']))
     print('    event time:   {0}'.format(dataset['starttime']))
-    print('    location:     {0}'.format(event['geometries'][-1]['coordinates'].reverse()))
+    print('    location:     {0}'.format(event['geometry'][-1]['coordinates'].reverse()))
     print('    version:      {0}'.format(dataset['version']))
 
 
@@ -35,23 +35,23 @@ def build_id(event):
         source = event['sources'][0]['id']
         event_id = event['id']
         category = event['categories'][0]['title'].lower().replace(' ', '-')
-        stripped_dt = re.sub('-|:', '', event['geometries'][-1]['date'])
+        stripped_dt = re.sub('-|:', '', event['geometry'][-1]['date'])
         uid = '{0}_{1}_{2}_{3}_{4}'.format(PRODUCT_PREFIX, category, source, event_id, stripped_dt)
-    except:
-        raise Exception('failed on {}'.format(event))
+    except Exception as err:
+        raise Exception('failed in build_id on {} with {}'.format(event, err))
     return uid
 
 def is_point_event(event):
-    return event['geometries'][-1]['type'] == 'Point'
+    return event['geometry'][-1]['type'] == 'Point'
 
 def build_dataset(event):
     """parse out the relevant dataset parameters and return as dict"""
-    time = event['geometries'][-1]['date']
+    time = event['geometry'][-1]['date']
 
     if is_point_event(event):
         location = build_polygon_geojson(event)
     else:
-        location = event['geometries'][-1]
+        location = event['geometry'][-1]
         del location['date']
 
     label = build_id(event)
@@ -89,8 +89,8 @@ def shift(latitude, longitude, bearing, distance):
 
 
 def build_polygon_geojson(event):
-    latitude = float(event['geometries'][-1]['coordinates'][1])
-    longitude = float(event['geometries'][-1]['coordinates'][0])
+    latitude = float(event['geometry'][-1]['coordinates'][1])
+    longitude = float(event['geometry'][-1]['coordinates'][0])
     radius = 2.0
     l = range(0, 361, 20)  # Figure out what l, b are, and replace with informative names
     coordinates = []

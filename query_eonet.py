@@ -15,7 +15,7 @@ import pytz
 import requests
 from shapely.geometry import shape, Polygon, Point
 import redis
-from hysds_commons.net_utils import get_container_host_ip
+# from hysds_commons.net_utils import get_container_host_ip
 import build_event_product
 
 POOL = None
@@ -44,9 +44,9 @@ def main(starttime=None, endtime=None, lookback_days=None, status=None, source=N
     for event in events:
         try:
             # submit an event for each product date/location
-            geometries = copy.deepcopy(event['geometries'])
-            for geometry in geometries:
-                event['geometries'] = [geometry]
+            geometry = copy.deepcopy(event['geometry'])
+            for el in geometry:
+                event['geometry'] = [el]
                 build_event_product.build_hysds_product(event)
         except Exception as err:
             print('failed on build {} with err: {}'.format(event, err))
@@ -60,13 +60,13 @@ def main(starttime=None, endtime=None, lookback_days=None, status=None, source=N
 def build_query(lookback_days, status, source, polygon_string, now):
     '''builds a query url from the input filter params. returns the url'''
 
-    query = 'https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=10000'
+    query = 'https://eonet.sci.gsfc.nasa.gov/api/v3/events?limit=10000'
 
     # build query params
     if lookback_days == 'redis':
         # use dt of last query from redis, & find the number of days lookback that requires
         redis_str = get_redis_time()
-        if not redis_str is None:
+        if redis_str is not None:
             redis_dt = dt_parser.parse(redis_str).replace(tzinfo=pytz.UTC)
             num_days = (dt_parser.parse(now).replace(tzinfo=pytz.UTC) - redis_dt).days + 1
             query += '&days={}'.format(num_days)
@@ -101,20 +101,20 @@ def filter_response(response, starttime, endtime, polygon_string):
     dated_events = []
     for event in response['events']:
         temp_event = copy.deepcopy(event)
-        temp_event['geometries'] = [x for x in copy.deepcopy(event['geometries']) if 'date' in x.keys()]
+        temp_event['geometry'] = [x for x in copy.deepcopy(event['geometry']) if 'date' in x.keys()]
         dated_events.append(temp_event)
-        print(temp_event['geometries'][0]['date'])
+        print(temp_event['geometry'][0]['date'])
 
-    prefiltered_events = [event for event in dated_events if len(event['geometries']) > 0]
+    prefiltered_events = [event for event in dated_events if len(event['geometry']) > 0]
 
     # run the spatial and temporal filters
     for event in prefiltered_events:
         if polygon_string:
-            event['geometries'] = [geometry for geometry in event['geometries'] if validate_spatial_coverage(geometry, polygon_string)]
+            event['geometry'] = [el for el in event['geometry'] if validate_spatial_coverage(el, polygon_string)]
         if starttime and endtime:
-            event['geometries'] = [geometry for geometry in event['geometries'] if validate_temporal_coverage(geometry, starttime, endtime)]
+            event['geometry'] = [el for el in event['geometry'] if validate_temporal_coverage(el, starttime, endtime)]
 
-    return [event for event in prefiltered_events if len(event['geometries']) > 0]
+    return [event for event in prefiltered_events if len(event['geometry']) > 0]
 
 
 def validate_temporal_coverage(location, start_time, end_time):
@@ -176,30 +176,30 @@ def validate_decimal(input_decimal):
     except:
         print('Input value invalid: {0}'.format(input_decimal))
 
-
-def get_redis_time():
-    '''get the last successful runtime from redis'''
-    return redis_get(REDIS_KEY)
-
-
-def redis_get(key):
-    '''returns the value of the given redis key'''
-    global POOL
-    redis_url = 'redis://%s' % get_container_host_ip()
-    POOL = redis.ConnectionPool.from_url(redis_url)
-    rds = redis.StrictRedis(connection_pool=POOL)
-    value = rds.get(key)
-    return value
-
-
-def redis_set(key, value):
-    '''set redis key to the given value'''
-    global POOL
-    redis_url = 'redis://%s' % get_container_host_ip()
-    POOL = redis.ConnectionPool.from_url(redis_url)
-    rds = redis.StrictRedis(connection_pool=POOL)
-    rds.set(key, value)
-    return value
+#
+# def get_redis_time():
+#     '''get the last successful runtime from redis'''
+#     return redis_get(REDIS_KEY)
+#
+#
+# def redis_get(key):
+#     '''returns the value of the given redis key'''
+#     global POOL
+#     redis_url = 'redis://%s' % get_container_host_ip()
+#     POOL = redis.ConnectionPool.from_url(redis_url)
+#     rds = redis.StrictRedis(connection_pool=POOL)
+#     value = rds.get(key)
+#     return value
+#
+#
+# def redis_set(key, value):
+#     '''set redis key to the given value'''
+#     global POOL
+#     redis_url = 'redis://%s' % get_container_host_ip()
+#     POOL = redis.ConnectionPool.from_url(redis_url)
+#     rds = redis.StrictRedis(connection_pool=POOL)
+#     rds.set(key, value)
+#     return value
 
 
 def get_test_event():
@@ -223,11 +223,11 @@ def argument_parser():
     parse.add_argument("--status", required=False, default=None, choices=['open', 'closed'],
                        help="Status of event. open or closed", dest="status")
     parse.add_argument("--source", required=False, default=None,
-                       help="Query over single source, sources at: https://eonet.sci.gsfc.nasa.gov/api/v2.1/sources",
+                       help="Query over single source, sources at: https://eonet.sci.gsfc.nasa.gov/api/v3/sources",
                        dest="source")
     parse.add_argument("--slack_notification", required=False, default=False,
                        help="Key for slack notification, will notify via slack if provided.", dest="slack_notification")
-    parse.add_argument("--polygon", required=False, default=None, help="Geojson polygon filter", dest="polygon")
+    parse.add_argument("--polygon", required=False, default="[[-180,-90],[-180,90],[180,90],[180,-90],[-180,-90]]", help="Geojson polygon filter", dest="polygon", )
     parse.add_argument("--test", required=False, default=False, action="store_true",
                        help="Run a test submission. Overrides all other params", dest="test")
     return parse
