@@ -16,5 +16,3 @@ fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ${DIR}/query_eonet.py --lookback_days "${1}" --polygon "${2}"
-# TODO: Determine whether direct-ingest is desirable, and fix if so (--submit flag has been removed)
-#${DIR}/query_eonet.py --lookback_days "${1}" --polygon "${2}" --submit
