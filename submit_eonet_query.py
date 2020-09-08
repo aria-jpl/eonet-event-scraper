@@ -51,12 +51,12 @@ def parse_job_tags(tag_string):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--lookback_days', help='Number of days to lookback for events. Use redis for last query time', dest='lookback', required=False, default='1')
+    parser.add_argument('--lookback_days', help='Number of days to lookback for events.', dest='lookback', required=False, default='1')
     parser.add_argument('--polygon', help='geojson polygon filter', dest='polygon', required=False, default="[[-180,-90],[-180,90],[180,90],[180,-90],[-180,-90]]")
-    parser.add_argument('--version', help='release version, eg "master" or "release-20180615"', dest='version', required=False, default='master')
-    parser.add_argument('--queue', help='Job queue', dest='queue', required=False, default='factotum-job_worker-small')
+    parser.add_argument('--version', help='branch/release version, eg "main" or "release-20180615"', dest='version', required=False, default='main')
+    parser.add_argument('--queue', help='Job queue', dest='queue', required=False, default='aria-job_worker-small')
     parser.add_argument('--priority', help='Job priority', dest='priority', required=False, default='5')
-    parser.add_argument('--tags', help='Job tags. Use a comma separated list for more than one', dest='tags', required=False, default='usgs_neic_query')
+    parser.add_argument('--tags', help='Job tags. Use a comma separated list for more than one', dest='tags', required=False, default='eonet_feed_query')
     args = parser.parse_args()
 
     main(args.lookback, args.polygon, args.version, args.queue, args.priority, args.tags)
