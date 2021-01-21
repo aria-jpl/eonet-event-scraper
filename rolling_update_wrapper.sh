@@ -8,7 +8,7 @@ branch=${1:-"main"}
 set -e
 
 # Define constants
-queue="edunn-jplnet-dev"
+queue="factotum-job_worker-small"
 max_eonet_curation_delay="15"
 whole_world_polygon="[[-180,-90],[-180,90],[180,90],[180,-90],[-180,-90]]"
 

@@ -1,12 +1,11 @@
 {
   "command":"/home/ops/verdi/ops/eonet/test_query.sh",
   "imported_worker_files": {
-    "/home/ops/.netrc": "/home/ops/.netrc",
-    "/home/ops/.aws": "/home/ops/.aws",
-    "/home/ops/ariamh/conf/settings.conf": "/home/ops/ariamh/conf/settings.conf"
+    "/export/home/hysdsops/.netrc": "/home/ops/.netrc",
+    "/export/home/hysdsops/.aws": "/home/ops/.aws"
   },
   "disk_usage":"2GB",
-  "recommended-queues": [ "edunn-jplnet-dev" ],
+  "recommended-queues": [ "factotum-job_worker-small" ],
   "soft_time_limit": 1000,
   "time_limit": 1800,
   "params" : []
